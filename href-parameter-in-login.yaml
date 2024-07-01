@@ -1,0 +1,28 @@
+id: href-parameter-ssrf
+
+info:
+  name: SSRF via href Parameter
+  author: azanul
+  severity: high
+  description: |
+    The href parameter is vulnerable to SSRF, allowing an attacker to inject a URL that will be requested upon clicking the link. This can be exploited to leak sensitive information.
+  
+http:
+  - raw:
+      - |
+        POST /path/to/endpoint HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/x-www-form-urlencoded
+
+        href=https://{{interactsh-url}}
+
+    matchers-condition: and
+    matchers:
+      - type: word
+        part: interactsh_protocol
+        words:
+          - "http"
+      - type: regex
+        part: interactsh_request
+        regex:
+          - "href=https://{{interactsh-url}}"
